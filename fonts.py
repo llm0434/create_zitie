@@ -2,7 +2,7 @@ import logging
 import os.path
 import re
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageColor
 from PyPDF2 import PdfFileMerger
 
 from config import *
@@ -34,6 +34,14 @@ class ArticleProducer(object):
 		self.draw = None
 		self.font = ImageFont.truetype(FONT_PATH, FONT_SIZE)
 
+		# 新增颜色处理逻辑
+		original_color = ImageColor.getrgb(FONT_COLOR)
+		percent = FONT_COLOR_PERCENT / 100.0
+		# 修改后的表达式，交换了项的位置，以满足100%时为原色，0%时最浅
+		self.fill_color = tuple(int(c * percent + 255 * (1 - percent)) for c in original_color)
+		
+		print(self.fill_color)
+		
 		self._init_painting()
 		self.pdf = PdfFileMerger()
 
@@ -158,7 +166,7 @@ class ArticleProducer(object):
 				(SQUARE_SIZE * (x + 1) + self.offset, SQUARE_SIZE * (y + 1) + self.offset),
 				ch,
 				font=self.font,
-				fill=FONT_COLOR,
+				fill=self.fill_color,  # 替换为动态计算的颜色
 				spacing=SQUARE_SIZE
 			)
 
@@ -266,3 +274,12 @@ class ArticleProducer(object):
 		logging.info('生成pdf： {}   成功！ \n'.format(pdf_dir))
 
 		self.del_old_pdfs(path)
+
+
+if __name__ == '__main__':
+    # 新增颜色处理逻辑
+    original_color = ImageColor.getrgb(FONT_COLOR)  # 修改：使用配置中的颜色
+    print(original_color)
+    percent = FONT_COLOR_PERCENT / 100.0  # 修改：使用配置中的百分比
+    fill_color = tuple(int(c * percent + 255 * (1 - percent)) for c in original_color)
+    print(fill_color)
