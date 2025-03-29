@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>字帖生成器</title>
+    <link rel="icon" href="{{ url_for('static', filename='new_icon.ico') }}">
+    <style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+        margin: 0;
+        padding: 20px;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+        color: #333;
+        border-bottom: 2px solid #ddd;
+        padding-bottom: 10px;
+    }
+
+    h1, h2{
+        text-align: center;
+    }
+    form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+    .form-group {
+        flex: 1;
+        min-width: 400px;
+    }
+    label {
+        display: block;
+        margin-top: 10px;
+        color: #666;
+    }
+    input, textarea, select {
+        width: 95%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        outline: none;
+        transition: border-color 0.3s;
+    }
+    input:focus, textarea:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0,123,255,0.3);
+    }
+    input[type="submit"] {
+        background: linear-gradient(to right, #007bff, #0062e6);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: transform 0.3s;
+    }
+    input[type="submit"]:hover {
+        transform: scale(1.05);
+    }
+    .config-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .config-container label {
+        flex: 0 0 48%; // 每个表单项占48%宽度，加上gap保持两列布局
+        box-sizing: border-box;
+    }
+</style>
+</head>
+<body>
+    <div class="container">
+        <h1>字帖设置</h1>
+        <form method="POST" action="/generate" class="form-container" id="zitieForm">
+            <div class="form-group">
+                <label>标题：
+                    <input type="text" name="article" required>
+                </label>
+            </div>
+            <div class="form-group">
+                <label>内容：
+                    <textarea name="text" rows="4" required></textarea>
+                </label>
+            </div>
+
+            <div class="form-group">
+                <h2>配置选项</h2>
+                <div class="config-container">
+                    <label>字体颜色：
+                        <input type="text" name="font_color" value="{{ config.font_color }}">
+                    </label>
+                    <label>字体大小：
+                        <input type="number" name="font_size" value="{{ config.font_size }}">
+                    </label>
+                    <label>田字格颜色：
+                        <input type="text" name="table_color" value="{{ config.table_color }}">
+                    </label>
+                    <label>背景颜色：
+                        <input type="text" name="back_color" value="{{ config.back_color }}">
+                    </label>
+                    <label>每页行数：
+                        <input type="number" name="line" value="{{ config.line }}">
+                    </label>
+                    <label>每页列数：
+                        <input type="number" name="row" value="{{ config.row }}">
+                    </label>
+                    <label>字体深浅(百分比)：
+                        <input type="number" name="font_color_percent" value="{{ config.font_color_percent }}">
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="生成字帖">
+            </div>
+        </form>
+<!-- 新增成功提示区域 -->
+<div class="success-message" style="display:none;">
+    <h2>{{ message }}</h2>
+    <p>点击以下链接下载：</p>
+    <a href="{{ url_for('download', article=article) }}">下载 {{ article }}.pdf</a>
+</div>
+
+<script>
+document.getElementById('zitieForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const form = this;
+    fetch(form.action, {
+        method: form.method,
+        body: new FormData(form)
+    })
+    .then(response => response.json())
+    .then(data => {
+        const messageDiv = document.querySelector('.success-message');
+        messageDiv.style.display = 'block';
+        messageDiv.querySelector('h2').textContent = data.message;
+        const link = messageDiv.querySelector('a');
+        link.href = `/download/${data.article}`;
+        link.textContent = `下载 ${data.article}.pdf`;
+    })
+    .catch(err => alert('生成失败，请重试'));
+});
+</script>
+    </div>
+</body>
+</html>
