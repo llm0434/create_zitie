@@ -10,7 +10,7 @@ TABLE_COLOR = 'red'
 # 背景颜色
 BACK_COLOR = 'white'
 # 每页行数
-LINE = 10
+LINE = 16
 # 每页列数
 ROW = 10
 # 色彩模式
@@ -18,7 +18,7 @@ MODE = 'RGB'
 
 # 文件相关
 # 字体文件位置
-FONT_PATH = './fonts/tk.ttf'
+FONT_PATH = './fonts/simsun.ttc'
 # 保存图片格式
 PIC_SCHEME = 'pdf'
 # 图片存放目录

@@ -261,6 +261,7 @@ class ArticleProducer(object):
 
 		pdf_dir = '{}/{}.pdf'.format(PDF_DIR, self.article)
 		self.pdf.write(pdf_dir)
+		self.pdf.close()  # 新增：关闭合并后的PDF文件，释放资源
 
 		logging.info('生成pdf： {}   成功！ \n'.format(pdf_dir))
 
