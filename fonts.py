@@ -10,8 +10,8 @@ from config import *
 logging.basicConfig(format='%(levelname)s:%(asctime)s:%(message)s', level=logging.DEBUG)
 logging.getLogger().setLevel(logging.INFO)
 
-# 修改CHINESE_PATTERN正则表达式以保留换行符
-CHINESE_PATTERN = re.compile(r'[\u4e00-\u9fa50-9\n]+')  # 新增\n支持换行符保留
+# 修改CHINESE_PATTERN正则表达式以支持字母
+CHINESE_PATTERN = re.compile(r'[\u4e00-\u9fa50-9a-zA-Z\n]+')  # 新增a-zA-Z支持字母
 
 
 class ArticleProducer(object):
@@ -28,8 +28,8 @@ class ArticleProducer(object):
         self.article = article
         self.author = author
         self.text = text
-        if only_chinese:
-            self.text = ''.join(re.findall(CHINESE_PATTERN, text))
+        # if only_chinese:
+        #     self.text = ''.join(re.findall(CHINESE_PATTERN, text))
         self.square_size = square_size
         self.font_size = font_size
         self.font_color = font_color
@@ -190,7 +190,7 @@ class ArticleProducer(object):
                 current_page = page + 1
 
         # 处理未满一页的剩余内容
-        if current_line_in_page > 0:  # 变量已正确初始化
+        if current_line_in_page >= 0:  # 修改：将条件改为>=0，确保即使只有一行也能保存
             path = self.save_image(current_page)
             pics.append(path)
 
